@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { nav, site, utilityLinks } from "@/lib/site";
+import { site, utilityLinks, whatsappLink } from "@/lib/site";
+import SocialLinks from "@/components/SocialLinks";
 
 function WhatsAppIcon() {
   return (
@@ -9,8 +10,21 @@ function WhatsAppIcon() {
   );
 }
 
-export default function Footer() {
-  const year = 2026; // Static year — update annually or move to client if dynamic year is needed
+function PhoneIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true" style={{ width: 18, height: 18 }}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M3 5.5A1.5 1.5 0 014.5 4h2.379a.75.75 0 01.698.474l1.29 3.221a.75.75 0 01-.217.858l-1.428 1.071a11.025 11.025 0 005.155 5.155l1.071-1.428a.75.75 0 01.858-.217l3.221 1.29a.75.75 0 01.474.698V19.5A1.5 1.5 0 0119.5 21C10.44 21 3 13.56 3 4.5z" />
+    </svg>
+  );
+}
+
+type FooterProps = {
+  facebookUrl?: string;
+  instagramUrl?: string;
+};
+
+export default function Footer({ facebookUrl = "", instagramUrl = "" }: FooterProps) {
+  const year = 2026;
 
   return (
     <footer className="site-footer">
@@ -29,6 +43,9 @@ export default function Footer() {
             <p style={{ fontSize: "0.85rem", color: "#93b89c", marginTop: "0.75rem" }}>
               As of {site.asOf}
             </p>
+            <div style={{ marginTop: "1rem" }}>
+              <SocialLinks facebookUrl={facebookUrl} instagramUrl={instagramUrl} variant="footer" />
+            </div>
             {/* Tricolour stripe */}
             <div style={{ height: 4, width: 64, marginTop: "1.25rem", background: "linear-gradient(90deg,#ff9933 0 33%,#fff 33% 66%,#138808 66%)", borderRadius: 4 }} aria-hidden="true" />
           </div>
@@ -43,7 +60,7 @@ export default function Footer() {
             </ul>
             <h2 style={{ marginTop: "1.5rem" }}>Community Work</h2>
             <ul>
-              <li><Link href="/community-work/health-blood-donation-camps">Health & Blood-Donation Camps</Link></li>
+              <li><Link href="/community-work/health-blood-donation-camps">Health &amp; Blood-Donation Camps</Link></li>
               <li><Link href="/community-work/educational-assistance">Educational Assistance</Link></li>
               <li><Link href="/community-work/cleanliness-drives">Cleanliness Drives</Link></li>
               <li><Link href="/community-work/relief-work">Relief Work</Link></li>
@@ -52,25 +69,26 @@ export default function Footer() {
 
           {/* Nav col: Ward 4 */}
           <div>
-            <h2>Ward 4 & Baranagar</h2>
+            <h2>Ward 4 &amp; Baranagar</h2>
             <ul>
               <li><Link href="/ward-4">Overview</Link></li>
-              <li><Link href="/ward-4/drainage-sanitation">Drainage & Sanitation</Link></li>
+              <li><Link href="/ward-4/drainage-sanitation">Drainage &amp; Sanitation</Link></li>
               <li><Link href="/ward-4/ambedkar-colony">Ambedkar Colony</Link></li>
               <li><Link href="/ward-4/election-2022">2022 Election</Link></li>
-              <li><Link href="/ward-4/evidence-sources">Evidence & Sources</Link></li>
+              <li><Link href="/ward-4/evidence-sources">Evidence &amp; Sources</Link></li>
             </ul>
           </div>
 
-          {/* Nav col: Proposals + Gallery */}
+          {/* Nav col: Proposals + Events */}
           <div>
             <h2>Proposals</h2>
             <ul>
               <li><Link href="/proposals/drainage">Drainage Improvements</Link></li>
-              <li><Link href="/proposals/water-hygiene">Water & Hygiene</Link></li>
+              <li><Link href="/proposals/water-hygiene">Water &amp; Hygiene</Link></li>
             </ul>
-            <h2 style={{ marginTop: "1.5rem" }}>More</h2>
+            <h2 style={{ marginTop: "1.5rem" }}>Events &amp; More</h2>
             <ul>
+              <li><Link href="/events">Events</Link></li>
               <li><Link href="/gallery">Gallery</Link></li>
               <li><Link href="/contact">Contact</Link></li>
               <li><Link href="/contact/report-issue">Report an Issue</Link></li>
@@ -82,23 +100,23 @@ export default function Footer() {
             <h2>Contact</h2>
             <ul style={{ gap: "0.75rem" }}>
               <li>
-                <a href={site.contact.phoneHref} style={{ color: "#d9ecdd" }}>
-                  📞 {site.contact.phoneDisplay}
+                <a
+                  href={site.contact.phoneHref}
+                  style={{ display: "inline-flex", alignItems: "center", gap: "0.45rem", color: "#d9ecdd" }}
+                  aria-label={`Call ${site.contact.phoneDisplay}`}
+                >
+                  <PhoneIcon /> {site.contact.phoneDisplay}
                 </a>
               </li>
               <li>
                 <a
-                  href={`https://wa.me/${site.contact.whatsapp}`}
+                  href={whatsappLink()}
                   target="_blank"
-                  rel="noreferrer"
-                  style={{ display: "inline-flex", alignItems: "center", gap: "0.45rem", color: "#d9ecdd" }}
+                  rel="noopener noreferrer"
+                  className="footer-wa-btn"
+                  aria-label={`Chat on WhatsApp at ${site.contact.whatsappDisplay}`}
                 >
-                  <WhatsAppIcon /> WhatsApp
-                </a>
-              </li>
-              <li>
-                <a href={`mailto:${site.contact.email}`} style={{ color: "#d9ecdd" }}>
-                  {site.contact.email}
+                  <WhatsAppIcon /> WhatsApp {site.contact.whatsappDisplay}
                 </a>
               </li>
               <li style={{ color: "#93b89c", fontSize: "0.9rem", marginTop: "0.35rem" }}>
@@ -116,7 +134,7 @@ export default function Footer() {
           <p style={{ margin: 0 }}>
             © {year} {site.name}. Civic information only — see the{" "}
             <Link href="/disclaimer">Disclaimer</Link> and{" "}
-            <Link href="/privacy">Privacy & Photo Consent</Link> pages.
+            <Link href="/privacy">Privacy &amp; Photo Consent</Link> pages.
           </p>
           <nav aria-label="Utility links">
             {utilityLinks.map((l) => (

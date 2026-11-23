@@ -1,16 +1,22 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
 import StatCounter from "@/components/StatCounter";
 import RevealWrapper from "@/components/RevealWrapper";
 import SourcesFooter from "@/components/SourcesFooter";
 import Photo from "@/components/Photo";
 import { photos } from "@/lib/photos";
-import { site } from "@/lib/site";
+import { site, whatsappLink } from "@/lib/site";
+import { getSplitEvents } from "@/lib/events-store";
+import { eventCategoryLabels, formatEventDate } from "@/lib/events-types";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Home — Debashis Chowdhury, Ward 4 Baranagar",
   description: site.description,
+  alternates: {
+    canonical: "/",
+  },
 };
 
 function ArrowRight() {
@@ -70,7 +76,10 @@ const activities = [
   { icon: <HandIcon />, label: "Relief Work", href: "/community-work/relief-work" },
 ];
 
-export default function Home() {
+export default async function Home() {
+  const { upcoming, past } = await getSplitEvents();
+  const featuredEvents = [...upcoming, ...past].slice(0, 3);
+
   return (
     <>
       {/* ── Hero ─────────────────────────────────────────── */}
@@ -325,6 +334,96 @@ export default function Home() {
                 <Photo src={photos.communityWork3.src} alt={photos.communityWork3.alt} ratioClass="ratio-1" />
               </div>
             </RevealWrapper>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Events section ───────────────────────────────── */}
+      <section className="section" aria-labelledby="home-events-heading">
+        <div className="container">
+          <div className="section-head" style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "flex-end", gap: "1rem" }}>
+            <div>
+              <p className="eyebrow">Community Calendar</p>
+              <h2 id="home-events-heading">Upcoming &amp; Recent Events</h2>
+              <p className="lead">
+                Stay updated on upcoming Ward 4 programmes and browse photo galleries from past events.
+              </p>
+            </div>
+            <Link href="/events" className="btn btn-outline">
+              All Events <ArrowRight />
+            </Link>
+          </div>
+
+          {featuredEvents.length === 0 ? (
+            <div className="note" style={{ maxWidth: 680 }}>
+              <p style={{ margin: 0 }}>
+                No community events have been published yet. Visit the{" "}
+                <Link href="/events">Events page</Link> or <Link href="/gallery">Photo Gallery</Link> for
+                updates.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-3">
+              {featuredEvents.map((ev) => {
+                const isUp = upcoming.some((u) => u.id === ev.id);
+                const cover = ev.images[0];
+                return (
+                  <Link key={ev.id} href={`/events/${ev.slug}`} className="card card-hover card-link event-card">
+                    <div className="event-card-media">
+                      {cover ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={cover.url} alt={cover.alt || ev.title} loading="lazy" decoding="async" />
+                      ) : (
+                        <div className="photo-placeholder" style={{ height: "100%" }}>
+                          <strong>{eventCategoryLabels[ev.category]}</strong>
+                        </div>
+                      )}
+                    </div>
+                    <div className="event-card-body">
+                      <span className={`tag ${isUp ? "tag-water" : "tag-saffron"}`} style={{ alignSelf: "flex-start" }}>
+                        {isUp ? "Upcoming" : "Past Event"}
+                      </span>
+                      <h3 style={{ margin: "0.2rem 0 0" }}>{ev.title}</h3>
+                      <div className="event-meta">
+                        <span>📅 {formatEventDate(ev.date)}</span>
+                        <span>📍 {ev.location}</span>
+                      </div>
+                      <span className="link-arrow" style={{ marginTop: "auto", paddingTop: "0.5rem" }}>
+                        View event <ArrowRight />
+                      </span>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* ── Contact CTA band ─────────────────────────────── */}
+      <section className="section-tight" aria-label="Direct contact">
+        <div className="container">
+          <div className="cta-band">
+            <div>
+              <h2>Need assistance in Ward 4?</h2>
+              <p>
+                Reach out directly on WhatsApp ({site.contact.whatsappDisplay}) or call{" "}
+                {site.contact.phoneDisplay} ({site.contact.hours}).
+              </p>
+            </div>
+            <div className="btn-row">
+              <a
+                href={whatsappLink("Hello, I would like to connect regarding Ward 4, Baranagar.")}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-green"
+              >
+                WhatsApp Now
+              </a>
+              <a href={site.contact.phoneHref} className="btn btn-outline">
+                Call {site.contact.phoneDisplay}
+              </a>
+            </div>
           </div>
         </div>
       </section>

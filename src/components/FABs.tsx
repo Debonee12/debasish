@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { site, whatsappLink } from "@/lib/site";
 
 function WhatsAppIcon() {
@@ -25,15 +26,32 @@ function AlertIcon() {
 }
 
 export default function FABs() {
+  const [atFooter, setAtFooter] = useState(false);
+
+  useEffect(() => {
+    const footer = document.querySelector("footer.site-footer");
+    if (!footer) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setAtFooter(entry.isIntersecting);
+      },
+      { threshold: 0.05 }
+    );
+
+    observer.observe(footer);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <div className="fab-stack" aria-label="Quick actions">
+    <div className="fab-stack" aria-label="Quick contact actions">
       <a
-        href={whatsappLink("Hello, I want to report a Ward 4 issue.")}
+        href={whatsappLink("Hello, I would like to connect regarding Ward 4, Baranagar.")}
         className="fab fab-whatsapp"
         target="_blank"
-        rel="noreferrer"
-        aria-label="WhatsApp"
-        title="WhatsApp"
+        rel="noopener noreferrer"
+        aria-label={`Chat on WhatsApp (${site.contact.whatsappDisplay})`}
+        title={`WhatsApp ${site.contact.whatsappDisplay}`}
       >
         <WhatsAppIcon />
       </a>
@@ -41,14 +59,16 @@ export default function FABs() {
         href={site.contact.phoneHref}
         className="fab fab-call"
         aria-label={`Call ${site.contact.phoneDisplay}`}
-        title="Call"
+        title={`Call ${site.contact.phoneDisplay}`}
       >
         <PhoneIcon />
       </a>
       <Link
         href="/contact/report-issue"
-        className="fab fab-report"
+        className={`fab fab-report${atFooter ? " is-hidden" : ""}`}
         aria-label="Report a Ward 4 issue"
+        aria-hidden={atFooter}
+        tabIndex={atFooter ? -1 : undefined}
       >
         <AlertIcon />
         <span className="fab-text">Report an Issue</span>

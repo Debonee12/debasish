@@ -1,9 +1,9 @@
 /**
- * Site-wide configuration: identity, contact channels and navigation.
- *
- * IMPORTANT: Contact details were NOT included in the supplied PDF.
- * Replace the placeholder values below before publishing.
+ * Site-wide configuration: identity, contact channels, social links, and navigation.
  */
+
+const rawUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://debashischowdhury.in";
+const normalizedUrl = rawUrl.endsWith("/") ? rawUrl.slice(0, -1) : rawUrl;
 
 export const site = {
   name: "Debashis Chowdhury",
@@ -12,18 +12,29 @@ export const site = {
   labelBn: "বরানগর পৌরসভা · ওয়ার্ড ৪",
   tagline: "Community Work and Ward 4’s Civic Priorities",
   description:
-    "Civic information on Baranagar Ward 4 — drainage, sanitation and water priorities, the 2022 election picture, community work and discussion proposals — alongside the supplied profile of Debashis Chowdhury.",
+    "Civic information on Baranagar Ward 4 — drainage, sanitation and water priorities, community events, the 2022 election picture, and public engagement by Debashis Chowdhury.",
   asOf: "8 October 2026",
-  url: "https://example.org", // TODO: replace with the live domain
+  url: normalizedUrl,
 
   contact: {
-    // TODO: replace with the real numbers / email (not in the supplied PDF)
-    phoneDisplay: "+91 00000 00000",
-    phoneHref: "tel:+910000000000",
-    whatsapp: "910000000000",
-    email: "contact@example.org",
+    phoneDisplay: "+91 70032 38851",
+    phoneRaw: "+91 7003238851",
+    phoneHref: "tel:+917003238851",
+    whatsapp: "919051268110",
+    whatsappDisplay: "+91 90512 68110",
+    whatsappRaw: "+91 9051268110",
+    email: process.env.NEXT_PUBLIC_CONTACT_EMAIL?.trim() || "contact@example.org",
     area: "Ward 4, Baranagar Municipality, North 24 Parganas, West Bengal",
     hours: "Mon–Sat, 10:00 am – 7:00 pm",
+  },
+
+  social: {
+    facebook:
+      process.env.NEXT_PUBLIC_FACEBOOK_URL?.trim() ||
+      "https://www.facebook.com/debashis.chowdhurybapi",
+    instagram:
+      process.env.NEXT_PUBLIC_INSTAGRAM_URL?.trim() ||
+      "https://www.instagram.com/debashischowdhurybapi",
   },
 } as const;
 
@@ -57,6 +68,14 @@ export const nav: NavItem[] = [
     ],
   },
   {
+    href: "/events",
+    label: "Events",
+    children: [
+      { href: "/events", label: "Upcoming & Past Events", hint: "Community events & photo galleries" },
+      { href: "/gallery", label: "Photo Gallery", hint: "Field work & public events" },
+    ],
+  },
+  {
     href: "/ward-4",
     label: "Ward 4 & Baranagar",
     children: [
@@ -76,12 +95,11 @@ export const nav: NavItem[] = [
       { href: "/proposals/water-hygiene", label: "Water & Hygiene Improvements", hint: "Supply, quality, access" },
     ],
   },
-  { href: "/gallery", label: "Gallery" },
   {
     href: "/contact",
     label: "Contact",
     children: [
-      { href: "/contact", label: "Contact", hint: "Phone, WhatsApp, email" },
+      { href: "/contact", label: "Contact", hint: "Phone, WhatsApp, social" },
       { href: "/contact/report-issue", label: "Report a Ward 4 Issue", hint: "Drains, water, sanitation" },
     ],
   },
@@ -91,9 +109,15 @@ export const utilityLinks: NavChild[] = [
   { href: "/privacy", label: "Privacy & Photo Consent" },
   { href: "/disclaimer", label: "Disclaimer" },
   { href: "/ward-4/evidence-sources", label: "Evidence & Sources" },
+  { href: "/admin/events", label: "Event Admin" },
 ];
 
 export function whatsappLink(message?: string) {
   const base = `https://wa.me/${site.contact.whatsapp}`;
   return message ? `${base}?text=${encodeURIComponent(message)}` : base;
+}
+
+export function canonicalUrl(path: string) {
+  const clean = path.startsWith("/") ? path : `/${path}`;
+  return clean === "/" ? site.url : `${site.url}${clean}`;
 }

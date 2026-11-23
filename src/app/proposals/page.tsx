@@ -48,7 +48,7 @@ export default function ProposalsPage() {
             <Link href="/proposals/drainage" className="card card-hover card-link">
               <div className="icon-badge green" style={{ fontSize: "1.5rem", width: 60, height: 60, borderRadius: "16px" }}>🚰</div>
               <h3>Drainage Improvements</h3>
-              <p>A three-step approach: inspect, maintain and follow up on Ward 4's overflowing drains.</p>
+              <p>A three-step approach: inspect, maintain and follow up on Ward 4&apos;s overflowing drains.</p>
               <div className="steps" style={{ marginTop: "1rem" }}>
                 {["01 Inspection", "02 Maintenance", "03 Follow-up"].map((s) => (
                   <div key={s} className="tag" style={{ borderRadius: 8, padding: "0.35rem 0.65rem" }}>{s}</div>

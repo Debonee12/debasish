@@ -38,7 +38,12 @@ function PhoneIcon() {
 /* ── Header ─────────────────────────────────────────────── */
 export default function Header() {
   const pathname = usePathname();
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [openForPath, setOpenForPath] = useState<string | null>(null);
+  const mobileOpen = openForPath === pathname;
+  const setMobileOpen = (next: boolean | ((prev: boolean) => boolean)) => {
+    const resolved = typeof next === "function" ? next(openForPath === pathname) : next;
+    setOpenForPath(resolved ? pathname : null);
+  };
   const [scrolled, setScrolled] = useState(false);
 
   // Scroll shadow
@@ -47,9 +52,6 @@ export default function Header() {
     window.addEventListener("scroll", handler, { passive: true });
     return () => window.removeEventListener("scroll", handler);
   }, []);
-
-  // Close mobile nav on route change
-  useEffect(() => { setMobileOpen(false); }, [pathname]);
 
   // Trap focus / ESC for mobile panel
   const panelRef = useRef<HTMLDivElement>(null);
@@ -188,7 +190,7 @@ export default function Header() {
             <a href={site.contact.phoneHref} className="btn btn-outline">
               <PhoneIcon /> {site.contact.phoneDisplay}
             </a>
-            <a href={whatsappLink("Hello, I want to report a Ward 4 issue.")} target="_blank" rel="noreferrer" className="btn btn-green">
+            <a href={whatsappLink("Hello, I want to report a Ward 4 issue.")} target="_blank" rel="noopener noreferrer" className="btn btn-green">
               WhatsApp
             </a>
           </div>
